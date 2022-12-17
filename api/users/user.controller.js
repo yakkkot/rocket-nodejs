@@ -64,7 +64,7 @@ const userController = {
             await checkName(users, updateUser);
 
             const index = user.id - 1;
-            users[index - 1] = {...users[index - 1], ...updateUser};
+            users[index] = {...users[index], ...updateUser};
 
             await writeData(users);
             res.json('Users updated successfully');
