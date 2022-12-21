@@ -1,13 +1,13 @@
 const {readData, writeData, checkName, findUserByID} = require("./users.services");
 
 const userController = {
+
     getAllUsers: async (req, res) => {
         try {
             const users = await readData();
             res.json(users);
-        }
-        catch (e) {
-            res.status(400).json(e.message);
+        } catch (e) {
+            res.status(400).send(e.message);
         }
     },
 
@@ -18,11 +18,11 @@ const userController = {
 
             await checkName(users, createUser);
             if (typeof createUser.name !== 'string' || createUser.name.length < 2) {
-                return res.status(400).json('Incorrect Name');
+                return res.status(400).send('Incorrect Name');
             }
 
             if (typeof createUser.age !== 'number' || createUser.age < 0) {
-                return res.status(400).json('Incorrect Age');
+                return res.status(400).send('Incorrect Age');
             }
 
             const newUser = {
@@ -35,9 +35,8 @@ const userController = {
             await writeData(users);
 
             res.status(201).json(newUser);
-        }
-        catch (e) {
-            res.status(400).json(e.message);
+        } catch (e) {
+            res.status(400).send(e.message);
         }
     },
 
@@ -46,11 +45,10 @@ const userController = {
             const {id} = req.params;
             const users = await readData();
 
-            const user = await findUserByID(users,id);
+            const user = await findUserByID(users, id);
             res.json(user);
-        }
-        catch (e) {
-            res.status(400).json(e.message);
+        } catch (e) {
+            res.status(400).send(e.message);
         }
     },
 
@@ -60,17 +58,16 @@ const userController = {
             const {id} = req.params;
 
             const users = await readData();
-            const user = await findUserByID(users,id);
+            const user = await findUserByID(users, id);
             await checkName(users, updateUser);
 
             const index = user.id - 1;
             users[index] = {...users[index], ...updateUser};
 
             await writeData(users);
-            res.json('Users updated successfully');
-        }
-        catch (e) {
-            res.status(400).json(e.message);
+            res.send('Users updated successfully');
+        } catch (e) {
+            res.status(400).send(e.message);
         }
     },
 
@@ -79,16 +76,15 @@ const userController = {
             const {id} = req.params;
 
             const users = await readData();
-            const user = await findUserByID(users,id);
+            const user = await findUserByID(users, id);
             const index = user.id - 1;
 
             users.splice(index, 1);  // or filter
 
             await writeData(users);
-            res.status(200).json('User was deleted');
-        }
-        catch (e) {
-            res.status(400).json(e.message);
+            res.status(200).send('User was deleted');
+        } catch (e) {
+            res.status(400).send(e.message);
         }
     },
 };

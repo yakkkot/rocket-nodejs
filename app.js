@@ -1,7 +1,7 @@
-const express = require('express')
+const express = require('express');
 
-const {apiRouter} = require('./api/api.router')
-const {PORT} = require('./configs/app.const')
+const {apiRouter} = require('./api/api.router');
+const {PORT} = require('./configs/app.const');
 
 const app = express();
 

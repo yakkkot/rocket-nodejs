@@ -7,11 +7,11 @@ const pathDB = path.join('dataBase', 'data.json');
 module.exports = {
     readData: async () => {
         const users = await fs.readFile(pathDB);
-        return JSON.parse(users.toString())
+        return JSON.parse(users.toString());
     },
 
     writeData: async (users) => {
-        await fs.writeFile(pathDB, JSON.stringify(users))
+        await fs.writeFile(pathDB, JSON.stringify(users));
     },
 
     checkName: async (usersDB, userBody) => {
