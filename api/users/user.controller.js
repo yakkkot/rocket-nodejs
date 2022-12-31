@@ -1,90 +1,51 @@
-const {readData, writeData, checkName, findUserByID} = require("./users.services");
+const {getUsers, createOneUser, updateOneUser, deleteOneUser} = require("./users.services");
 
 const userController = {
 
-    getAllUsers: async (req, res) => {
+    getAllUsers: async (req, res, next) => {
         try {
-            const users = await readData();
+            const users = await getUsers();
             res.json(users);
         } catch (e) {
-            res.status(400).send(e.message);
+            next(e);
         }
     },
 
-    createUser: async (req, res) => {
+    getOneUser: (req, res, next) => {
         try {
-            const createUser = req.body;
-            const users = await readData();
-
-            await checkName(users, createUser);
-            if (typeof createUser.name !== 'string' || createUser.name.length < 2) {
-                return res.status(400).send('Incorrect Name');
-            }
-
-            if (typeof createUser.age !== 'number' || createUser.age < 0) {
-                return res.status(400).send('Incorrect Age');
-            }
-
-            const newUser = {
-                id: users.at(-1) ? users.at(-1).id + 1 : 1,
-                name: createUser.name,
-                age: createUser.age,
-            };
-
-            users.push(newUser);
-            await writeData(users);
-
-            res.status(201).json(newUser);
+            res.json(req.user);
         } catch (e) {
-            res.status(400).send(e.message);
+            next(e);
         }
     },
 
-    getUser: async (req, res) => {
+    createUser: async (req, res, next) => {
         try {
-            const {id} = req.params;
-            const users = await readData();
-
-            const user = await findUserByID(users, id);
-            res.json(user);
+            const user = await createOneUser(req.body);
+            res.status(201).json(user);
         } catch (e) {
-            res.status(400).send(e.message);
+            next(e);
         }
     },
 
-    updateUser: async (req, res) => {
+
+    updateUser: async (req, res, next) => {
         try {
-            const updateUser = req.body;
-            const {id} = req.params;
-
-            const users = await readData();
-            const user = await findUserByID(users, id);
-            await checkName(users, updateUser);
-
-            const index = user.id - 1;
-            users[index] = {...users[index], ...updateUser};
-
-            await writeData(users);
+            console.log(req.params.id);
+            console.log(req.user);
+            await updateOneUser(req.params.id, req.user);
             res.send('Users updated successfully');
         } catch (e) {
-            res.status(400).send(e.message);
+            next(e);
         }
     },
 
-    deleteUser: async (req, res) => {
+    deleteUser: async (req, res, next) => {
         try {
-            const {id} = req.params;
-
-            const users = await readData();
-            const user = await findUserByID(users, id);
-            const index = user.id - 1;
-
-            users.splice(index, 1);  // or filter
-
-            await writeData(users);
+            await deleteOneUser(req.id);
             res.status(200).send('User was deleted');
         } catch (e) {
-            res.status(400).send(e.message);
+            next(e);
         }
     },
 };

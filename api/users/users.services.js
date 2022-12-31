@@ -1,31 +1,33 @@
-const fs = require("node:fs/promises");
-const path = require("node:path");
-
-
-const pathDB = path.join('dataBase', 'data.json');
+const User = require('../../dataBase/User');
 
 module.exports = {
-    readData: async () => {
-        const users = await fs.readFile(pathDB);
-        return JSON.parse(users.toString());
+    getUsers: async () => {
+        const users = await User.find();
+        return users;
     },
 
-    writeData: async (users) => {
-        await fs.writeFile(pathDB, JSON.stringify(users));
-    },
-
-    checkName: async (usersDB, userBody) => {
-        const userWithSameName = usersDB.find(u => u.name === userBody.name);
-        if (userWithSameName) {
-            throw new Error('User with this name already exists');
-        }
-    },
-
-    findUserByID: async (users, id) => {
-        const user = users.find(u => u.id === +id);
-        if (!user) {
-            throw new Error('User not found');
-        }
+    getUserByID: async (id) => {
+        const user = await User.findById(id);
         return user;
     },
+
+    findOneByParams: async (filter = {}) => {
+        const user = await User.findOne(filter);
+        return user;
+    },
+
+    createOneUser: async (newUser) => {
+        const user = await User.create(newUser);
+        return user;
+    },
+
+    updateOneUser: async (userID, newUser) => {
+        const user = await User.findOneAndUpdate(userID, newUser, {new: true});
+        return user;
+    },
+
+    deleteOneUser: async (userID) => {
+        const user = await User.deleteOne(userID);
+        return user;
+    }
 };
